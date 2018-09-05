@@ -1,11 +1,12 @@
 from pathlib import Path
 from typing import Optional, Dict, List, Any
+from os import path
 import json
 import requests
 import pandas as pd
 
 try:
-    with open(f"{Path.home()}/.comet_rest_key") as f:
+    with open(path.join(Path.home(), ".comet_rest_key")) as f:
         API_KEY = f.read().strip()
 except (FileNotFoundError, PermissionError):
     API_KEY = ""
