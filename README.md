@@ -1,8 +1,18 @@
-# comet_ml_api
+# cometml_api
 
 This is a set of _unofficial_ Python bindings for the CometML REST API. There are functions for all current endpoints as well as a couple of functions that build on the basic endpoint ones to provide, e.g., simpler output or filtering. I haven't used all of the endpoints myself, so some of the functions haven't been tested at all (e.g. `get_html`). Documentation is currently limited but the functions provided are generally quite simple.
 
 See [Endpoints][endpoints] for the official documentation of the REST API.
+
+## Installation
+
+```
+pip install cometml_api
+```
+
+Note that there is a _different_ project called `comet_ml_api` (note the extra underscore); don't accidentally install that one when you're trying to get this one!
+
+Python 2 is not supported. This should work on any OS, but I've only tested on Ubuntu (and a very small amount on Windows).
 
 ## Authentication
 
@@ -29,7 +39,7 @@ The `images` endpoint doesn't return the images themselves, just the data about 
 ## Example Usage
 
 ```python
-from comet_ml_api import api
+from cometml_api import api
 
 workspaces = api.get_workspaces()
 project_ids = api.get_project_names_and_ids(workspaces[0]) # {name: id}
