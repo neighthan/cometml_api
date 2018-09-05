@@ -17,7 +17,7 @@ def set_api_key(key: str) -> None:
     API_KEY = key
 
 
-def _get_url(url: str, url_params: Optional[Dict[str, str]]=None) -> dict:
+def _get_url(url: str, url_params: Optional[Dict[str, str]] = None) -> dict:
     response = requests.get(url, url_params, headers={"Authorization": API_KEY})
 
     if response.ok:
@@ -142,14 +142,24 @@ def get_metrics(experiment_key: str) -> Dict[str, pd.DataFrame]:
 
     for raw_metric in raw_metrics:
         name = raw_metric["metricName"]
-        raw_metric = (float(raw_metric["metricValue"]), raw_metric["step"], raw_metric["timestamp"], raw_metric["offset"])
+        raw_metric = (
+            float(raw_metric["metricValue"]),
+            raw_metric["step"],
+            raw_metric["timestamp"],
+            raw_metric["offset"],
+        )
 
         if name in metrics:
             metrics[name].append(raw_metric)
         else:
             metrics[name] = [raw_metric]
 
-    metrics = {name: pd.DataFrame(metrics[name], columns=["value", "step", "timestamp", "offset"]) for name in metrics}
+    metrics = {
+        name: pd.DataFrame(
+            metrics[name], columns=["value", "step", "timestamp", "offset"]
+        )
+        for name in metrics
+    }
     return metrics
 
 
