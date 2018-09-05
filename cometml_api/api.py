@@ -48,13 +48,13 @@ def get_project_names_and_ids(workspace: str) -> List[str]:
 
 
 def get_experiments(project_id: str) -> List[Dict[str, Any]]:
-    url = f"https://www.comet.ml/api/rest/v1/experiments"
+    url = "https://www.comet.ml/api/rest/v1/experiments"
     url_params = {"projectId": project_id}
     return _get_url(url, url_params)["experiments"]
 
 
 def get_raw_params(experiment_key: str) -> List[Dict[str, Any]]:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/params"
+    url = "https://www.comet.ml/api/rest/v1/experiment/params"
     url_params = {"experimentKey": experiment_key}
     params = _get_url(url, url_params)["results"]
     return params
@@ -66,7 +66,7 @@ def get_params(experiment_key: str) -> Dict[str, Any]:
 
 
 def get_raw_others(experiment_key: str) -> List[Dict[str, Any]]:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/log-other"
+    url = "https://www.comet.ml/api/rest/v1/experiment/log-other"
     url_params = {"experimentKey": experiment_key}
     others = _get_url(url, url_params)["logOtherList"]
     return others
@@ -78,25 +78,25 @@ def get_others(experiment_key: str) -> Dict[str, Any]:
 
 
 def get_html(experiment_key: str) -> str:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/html"
+    url = "https://www.comet.ml/api/rest/v1/experiment/html"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["html"]
 
 
 def get_code(experiment_key: str) -> str:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/code"
+    url = "https://www.comet.ml/api/rest/v1/experiment/code"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["code"]
 
 
 def get_stdout(experiment_key: str) -> str:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/stdout"
+    url = "https://www.comet.ml/api/rest/v1/experiment/stdout"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["output"]
 
 
 def get_installed_packages(experiment_key: str) -> List[str]:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/installed-packages"
+    url = "https://www.comet.ml/api/rest/v1/experiment/installed-packages"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["packages"]
 
@@ -105,25 +105,25 @@ def get_graph(experiment_key: str) -> str:
     """
     No idea what format the graph is in...
     """
-    url = f"https://www.comet.ml/api/rest/v1/experiment/graph"
+    url = "https://www.comet.ml/api/rest/v1/experiment/graph"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["graph"]
 
 
 def get_image_data(experiment_key: str) -> List[Dict[str, Any]]:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/images"
+    url = "https://www.comet.ml/api/rest/v1/experiment/images"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["images"]
 
 
 def get_raw_metrics(experiment_key: str):
-    url = f"https://www.comet.ml/api/rest/v1/experiment/metrics-raw"
+    url = "https://www.comet.ml/api/rest/v1/experiment/metrics-raw"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["metrics"]
 
 
 def get_raw_metric_summaries(experiment_key: str) -> List[Dict[str, Any]]:
-    url = f"https://www.comet.ml/api/rest/v1/experiment/metrics"
+    url = "https://www.comet.ml/api/rest/v1/experiment/metrics"
     url_params = {"experimentKey": experiment_key}
     return _get_url(url, url_params)["results"]
 
