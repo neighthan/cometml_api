@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Optional, Dict, List, Any
+from collections import defaultdict
+from typing import Optional, Dict, List, Any, Union, Sequence
 from os import path
 import json
 import requests
@@ -138,7 +139,7 @@ def get_metrics(experiment_key: str) -> Dict[str, pd.DataFrame]:
     # I don't know what "runContext" is, but I ignore it
 
     raw_metrics = get_raw_metrics(experiment_key)
-    metrics = {}  # {metric_name: [(value, step, timestamp, offset)]}
+    metrics = defaultdict(list)  # {metric_name: [(value, step, timestamp, offset)]}
 
     for raw_metric in raw_metrics:
         name = raw_metric["metricName"]
@@ -149,10 +150,7 @@ def get_metrics(experiment_key: str) -> Dict[str, pd.DataFrame]:
             raw_metric["offset"],
         )
 
-        if name in metrics:
-            metrics[name].append(raw_metric)
-        else:
-            metrics[name] = [raw_metric]
+        metrics[name].append(raw_metric)
 
     metrics = {
         name: pd.DataFrame(
@@ -163,27 +161,62 @@ def get_metrics(experiment_key: str) -> Dict[str, pd.DataFrame]:
     return metrics
 
 
-def get_experiments_with_params(project_id: str, query_params: Dict[str, Any]):
+def get_experiments_with_params(
+    project_id: str, query_params_list: Union[Sequence[Dict[str, Any]], Dict[str, Any]]
+) -> List[str]:
     """
-    Return the keys of the experiments in `project_id` that match all of the query params.
+    Return the keys of the experiments in `project_id` that match all of any set of the query params.
 
     There are valueMin, valueMax, and valueCurrent for each param, but I think these should
     all be the same? I just check valueCurrent. I also convert to strings when checking
     equality (so querying for 200 is the same as for "200") because it seems that
     strings are always used in Comet's stored parameters.
+
+    :param query_params_list: a list of dictionaries mapping parameter names to desired values. An experiment will
+      only be included if, for at least one of these dictionaries, it has the desired values for _all_ of the named
+      parameters (think of this as a logical AND across each dictionary and a logical OR between dictionaries)
+    :returns: a list of the keys of all experiments matched in the above manner. Note that these aren't guaranteed to
+      be in any order and aren't necessarily grouped by which query dictionary they matched.
     """
+
+    if not isinstance(query_params_list, Sequence):
+        query_params_list = [query_params_list]
 
     experiments = get_experiments(project_id)
     experiment_keys = []
     for experiment in experiments:
-        add_experiment = True
+        key = experiment["experiment_key"]
+        params = get_params(key)
+
+        for query_params in query_params_list:
+            add_experiment = True
+            for name, value in query_params.items():
+                matched = name in params and params[name] == value
+                add_experiment &= matched
+
+            if add_experiment:
+                experiment_keys.append(key)
+                break
+    return experiment_keys
+
+
+def get_experiments_grouped_by(
+    project_id: str, group_param: str
+) -> Dict[str, List[str]]:
+    """
+    If `group_param` isn't a parameter for an experiment, it will be ignored.
+    :returns: {grouped_value: [<experiment_keys>]}
+    """
+    groups = defaultdict(list)
+
+    experiments = get_experiments(project_id)
+    for experiment in experiments:
         key = experiment["experiment_key"]
 
         params = get_params(key)
-        for name, value in query_params.items():
-            matched = name in params and params[name] == value
-            add_experiment &= matched
+        if group_param not in params:
+            continue
 
-        if add_experiment:
-            experiment_keys.append(key)
-    return experiment_keys
+        group_value = params[group_param]
+        groups[group_value].append(key)
+    return groups
